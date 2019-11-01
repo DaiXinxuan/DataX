@@ -1,0 +1,14 @@
+{
+    "name": "hivereader",
+    "parameter": {
+        "defaultFS": "",
+        "sqls": [],
+        "user": "user",
+        "password": "pass",
+        "jdbcUrl": "",
+        "tables": [],
+        "fileType": "orc",
+        "hiveRoot": "UTF-8",
+        "fieldDelimiter": ","
+    }
+}
