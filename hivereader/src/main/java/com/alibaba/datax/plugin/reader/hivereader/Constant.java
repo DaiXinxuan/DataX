@@ -9,9 +9,6 @@ public class Constant {
     static final int MAX_TRY_TIMES = 4;
     static final int SOCKET_TIMEOUT_INSECOND = 172800;
 
-    public static final String TMP_PREFIX = "/user/datax_tmp/";
-    public static final String TABLE_NAME_PREFIX = "hive_reader_";
-
     public static final String SOURCE_FILES = "sourceFiles";
     public static final String IS_TABLE_MODE = "isTableMode";
 

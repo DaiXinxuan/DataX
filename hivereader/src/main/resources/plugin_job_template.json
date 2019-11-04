@@ -1,14 +1,19 @@
 {
     "name": "hivereader",
     "parameter": {
-        "defaultFS": "",
-        "sqls": [],
+        "defaultFS": "hdfs://ip:port",
+        "sqls": [
+            "select * from table1"
+        ],
         "user": "user",
         "password": "pass",
-        "jdbcUrl": "",
-        "tables": [],
-        "fileType": "orc",
-        "hiveRoot": "UTF-8",
+        "jdbcUrl": "jdbc:hive2://ip:port",
+        "tables": [
+            "table1",
+            "table2"
+        ],
+        "fileType": "TEXT",
+        "hiveRoot": "/user/hive/warehouse",
         "fieldDelimiter": ","
     }
 }

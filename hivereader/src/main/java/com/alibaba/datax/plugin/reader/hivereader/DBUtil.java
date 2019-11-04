@@ -31,7 +31,6 @@ public class DBUtil {
         conn.setAutoCommit(false);
         Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                 ResultSet.CONCUR_READ_ONLY);
-        stmt.setQueryTimeout(queryTimeout);
         return query(stmt, sql);
     }
 
