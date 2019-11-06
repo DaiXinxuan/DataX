@@ -1,7 +1,9 @@
 package com.alibaba.datax.plugin.reader.hivereader;
 
 import com.alibaba.datax.common.exception.DataXException;
+import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.common.util.RetryUtil;
+import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +41,14 @@ public class DBUtil {
         return stmt.executeQuery(sql);
     }
 
-    public static Connection getConnection(final String url, final String user, final String pass) {
+    public static Connection getConnection(final String url, final String user, final String pass,
+                                           final Configuration taskConfig) {
         try {
-            final String socketTimeout = String.valueOf(Constant.SOCKET_TIMEOUT_INSECOND * 1000);
             return RetryUtil.executeWithRetry(new Callable<Connection>() {
                 @Override
                 public Connection call() throws Exception {
                     return DBUtil.connect(url, user,
-                            pass, socketTimeout);
+                            pass, taskConfig);
                 }
             }, 9, 1000L, true);
         } catch (Exception e) {
@@ -57,16 +59,26 @@ public class DBUtil {
 
     }
 
-    private static synchronized Connection connect(String url, String user, String pass, String socketTimeout) {
+    private static synchronized Connection connect(String url, String user, String pass, Configuration taskConfig) {
         Properties prop = new Properties();
         prop.put("user", user);
         prop.put("password", pass);
 
-        return connect(url, prop);
+        return connect(url, prop, taskConfig);
     }
 
-    private static Connection connect(String url, Properties prop) {
+    private static Connection connect(String url, Properties prop, Configuration taskConfig) {
         try {
+            boolean haveKerberos = taskConfig.getBool(Key.HAVE_KERBEROS, false);
+            if (haveKerberos) {
+                String kerberosKeytabFilePath = taskConfig.getString(Key.KERBEROS_KEYTAB_FILE_PATH);
+                String kerberosPrincipal = taskConfig.getString(Key.KERBEROS_PRINCIPAL);
+
+                org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+                conf.set("hadoop.security.authentication", "Kerberos");
+                UserGroupInformation.setConfiguration(conf);
+                UserGroupInformation.loginUserFromKeytab(kerberosPrincipal, kerberosKeytabFilePath);
+            }
             Class.forName("org.apache.hive.jdbc.HiveDriver");
             DriverManager.setLoginTimeout(Constant.TIMEOUT_SECONDS);
             return DriverManager.getConnection(url, prop);

@@ -9,7 +9,7 @@ import com.alibaba.datax.common.spi.ErrorCode;
 public enum HiveReaderErrorCode implements ErrorCode {
 
     BAD_CONFIG_VALUE("HiveReader-00", "您配置的值不合法."),
-    SQL_NOT_FIND_ERROR("HiveReader-01", "您未配置hive sql"),
+    SQL_NOT_FOUND_ERROR("HiveReader-01", "您未配置hive sql"),
     DEFAULT_FS_NOT_FIND_ERROR("HiveReader-02", "您未配置defaultFS值"),
     ILLEGAL_VALUE("HiveReader-03", "值错误"),
     CONFIG_INVALID_EXCEPTION("HiveReader-04", "参数配置错误"),

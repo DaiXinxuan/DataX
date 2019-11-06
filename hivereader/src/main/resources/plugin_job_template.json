@@ -7,13 +7,6 @@
         ],
         "user": "user",
         "password": "pass",
-        "jdbcUrl": "jdbc:hive2://ip:port",
-        "tables": [
-            "table1",
-            "table2"
-        ],
-        "fileType": "TEXT",
-        "hiveRoot": "/user/hive/warehouse",
-        "fieldDelimiter": ","
+        "jdbcUrl": "jdbc:hive2://ip:port"
     }
 }
