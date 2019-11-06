@@ -16,11 +16,6 @@ public final class Key {
     public final static String PASSWORD = "password";
 
     /**
-     * hdfs地址，必传参数
-     */
-    public final static String DEFAULT_FS = "defaultFS";
-
-    /**
      * kerberos auth相关参数
      */
     public static final String HAVE_KERBEROS = "haveKerberos";

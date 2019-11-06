@@ -1,7 +1,6 @@
 {
     "name": "hivereader",
     "parameter": {
-        "defaultFS": "hdfs://ip:port",
         "sqls": [
             "select * from table1"
         ],

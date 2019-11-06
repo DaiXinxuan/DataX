@@ -7,6 +7,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -68,22 +69,31 @@ public class DBUtil {
     }
 
     private static Connection connect(String url, Properties prop, Configuration taskConfig) {
+        boolean haveKerberos = taskConfig.getBool(Key.HAVE_KERBEROS, false);
+        if (haveKerberos) {
+            String kerberosKeytabFilePath = taskConfig.getString(Key.KERBEROS_KEYTAB_FILE_PATH);
+            String kerberosPrincipal = taskConfig.getString(Key.KERBEROS_PRINCIPAL);
+            kerberosAuthentication(kerberosPrincipal, kerberosKeytabFilePath);
+        }
         try {
-            boolean haveKerberos = taskConfig.getBool(Key.HAVE_KERBEROS, false);
-            if (haveKerberos) {
-                String kerberosKeytabFilePath = taskConfig.getString(Key.KERBEROS_KEYTAB_FILE_PATH);
-                String kerberosPrincipal = taskConfig.getString(Key.KERBEROS_PRINCIPAL);
-
-                org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
-                conf.set("hadoop.security.authentication", "Kerberos");
-                UserGroupInformation.setConfiguration(conf);
-                UserGroupInformation.loginUserFromKeytab(kerberosPrincipal, kerberosKeytabFilePath);
-            }
             Class.forName("org.apache.hive.jdbc.HiveDriver");
             DriverManager.setLoginTimeout(Constant.TIMEOUT_SECONDS);
             return DriverManager.getConnection(url, prop);
         } catch (Exception e) {
             throw DataXException.asDataXException(HiveReaderErrorCode.CONN_DB_ERROR," 具体错误信息为："+e);
+        }
+    }
+
+    private static void kerberosAuthentication(String kerberosPrincipal, String kerberosKeytabFilePath) {
+        org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+        conf.set("hadoop.security.authentication", "kerberos");
+        UserGroupInformation.setConfiguration(conf);
+        try {
+            UserGroupInformation.loginUserFromKeytab(kerberosPrincipal, kerberosKeytabFilePath);
+        } catch (IOException e) {
+            String message = String.format("kerberos认证失败,请确定kerberosKeytabFilePath[%s]和kerberosPrincipal[%s]填写正确",
+                    kerberosKeytabFilePath, kerberosPrincipal);
+            throw DataXException.asDataXException(HiveReaderErrorCode.KERBEROS_LOGIN_ERROR, message, e);
         }
     }
 

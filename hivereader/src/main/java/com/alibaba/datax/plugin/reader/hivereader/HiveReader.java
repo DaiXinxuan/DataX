@@ -43,8 +43,6 @@ public class HiveReader extends Reader {
         }
 
         public void validate() {
-            readerOriginConfig.getNecessaryValue(Key.DEFAULT_FS,
-                    HiveReaderErrorCode.DEFAULT_FS_NOT_FIND_ERROR);
             readerOriginConfig.getNecessaryValue(Key.HIVE_SQL, HiveReaderErrorCode.SQL_NOT_FOUND_ERROR);
             sqls = readerOriginConfig.getList(Key.HIVE_SQL, String.class);
 
